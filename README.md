@@ -1,1 +1,2 @@
-# bot_nycwebb1
+Projenin amacı
+    bot_nycwebb1 projesi, https://www.nytimes.com/crosswords/game/mini adresindeki bulmacaların ipuçları bölümlerini günlük olarak almaya ve json formatında tarih alınan günün tarihini ekleyerek kaydetmeyi sağlar. Program her çalıştırıldığında yeni verileri alıp kaydedilen dosyayı günceller.
