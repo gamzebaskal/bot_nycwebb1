@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import logging
+import json
 
 logging.basicConfig(filename='logs.log', filemode='a', format="%(asctime)s %(message)s",
                     encoding='utf-8', level=logging.DEBUG)
@@ -17,6 +18,10 @@ selected_items = source.find_all("div", attrs={"class": "ClueList-wrapper--3m-kd
 
 text = ""
 
+clues = {
+    "clues": []
+}
+
 for i in selected_items:
     # erişitiğimiz metinleri istediğimiz biçime getirerek başlıklar halinde text değişkenine ekliyoruz.
     head = i.find('h3').text
@@ -26,5 +31,33 @@ for i in selected_items:
         li tagleri arasında bulunan satırları seçerek başlıkların altına ekliyoruz.
         """
         text += f"{number.text}. {txt.text}\n"
+        clues['clues'].append({"Group": head,
+                               "Number": number.text,
+                               "String": txt.text})
+
+
+def update_json(data, file, key="clues"):
+    """
+    Verilen json dosyadaki, istenilen anahtarın değerini, liste olarak gönderilen verileri ekleyerek günceller.
+    :param data: Json dosyaya eklenecek verilerin listesi.
+    :param file: Eklemenin yapılacağı json dosya.
+    :param key: Json dosyasındaki güncelleme yapılmak istenen anahtar.
+    :return: Geriye değer döndürmez.
+    """
+    file_data = json.load(file)
+
+    file_data[key].extend(data)
+    file.seek(0)
+    json.dump(file_data, file, indent=4)
+
+
+try:
+    with open("clues.json", "r+") as f:
+        update_json(clues["clues"], f)
+
+except FileNotFoundError as e:
+    logging.error(e)
+    with open("clues.json", "w") as f:
+        json.dump(clues, f, indent=4)
 
 print(text)
